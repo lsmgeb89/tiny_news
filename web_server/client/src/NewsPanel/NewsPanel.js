@@ -10,9 +10,27 @@ class NewsPanel extends React.Component {
     this.state = { news:null };
   }
 
+  handleScroll() {
+    // get how many pixels in y axis
+    // for compatibility, use three methods
+    const scrollY = window.scrollY
+      || window.pageYOffset
+      || document.documentElement.scrollY;
+
+    // if users scroll down to bottom
+    if ((window.innerHeight + scrollY) >= (document.body.offsetHeight - 50)) {
+      console.log('Loading more news!');
+      this.loadMoreNews();
+    }
+  }
+
   // override
   componentDidMount() {
     this.loadMoreNews();
+
+    // bind scroll event with loadMoreNews to implement auto loading
+    // use arrow function to pass this down to handleScroll
+    window.addEventListener('scroll', () => this.handleScroll());
   }
 
   loadMoreNews() {
