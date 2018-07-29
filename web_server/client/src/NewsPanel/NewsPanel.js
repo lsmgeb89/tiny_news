@@ -1,6 +1,7 @@
 import React from 'react';
 import './NewsPanel.css';
 import NewsCard from '../NewsCard/NewsCard';
+import _ from 'lodash';
 
 // NewsPanel is responsible for communication with back-end and generating NewsCard
 
@@ -27,7 +28,9 @@ class NewsPanel extends React.Component {
   // override
   componentDidMount() {
     this.loadMoreNews();
-
+    // use lodash to wrap loadMoreNews with debouncing
+    // trigger once in 1000ms
+    this.loadMoreNews = _.debounce(this.loadMoreNews, 1000);
     // bind scroll event with loadMoreNews to implement auto loading
     // use arrow function to pass this down to handleScroll
     window.addEventListener('scroll', () => this.handleScroll());
