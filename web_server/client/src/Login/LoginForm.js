@@ -39,7 +39,7 @@ const LoginForm = ({
           <input type="submit" className="waves-effect waves-light btn indigo lighten-1" value='Log in'/>
         </div>
         <div className="row">
-          <p className="right-align">New to Tiny News?<a href="/signup">Sign Up</a></p>
+          <p className="right-align">New to Tiny News? <a href="/signup">Sign Up</a></p>
         </div>
       </form>
     </div>
