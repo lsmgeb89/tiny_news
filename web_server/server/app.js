@@ -7,6 +7,10 @@ var newsRouter = require('./routes/news');
 
 var app = express();
 
+// connect mongodb
+var config = require('./config/config.json');
+require('./models/main.js').connect(config.mongoDbUri);
+
 // view engine setup
 app.set('views', path.join(__dirname, '../client/build'));
 app.set('view engine', 'jade');
