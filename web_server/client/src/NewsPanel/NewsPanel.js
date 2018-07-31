@@ -2,6 +2,7 @@ import React from 'react';
 import './NewsPanel.css';
 import NewsCard from '../NewsCard/NewsCard';
 import _ from 'lodash';
+import Auth from '../Auth/Auth';
 
 // NewsPanel is responsible for communication with back-end and generating NewsCard
 
@@ -38,7 +39,15 @@ class NewsPanel extends React.Component {
 
   loadMoreNews() {
     const news_url = 'http://' + window.location.hostname + ':3000' + '/news';
-    const request = new Request(news_url, { method:'GET', cache:'no-cache' });
+    const request = new Request(
+      news_url,
+      {
+        method:'GET',
+        headers: {
+          'Authorization': 'bearer ' + Auth.getToken()
+        },
+        cache:'no-cache'
+      });
 
     fetch(request)
       .then(res => res.json())
