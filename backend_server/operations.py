@@ -7,7 +7,7 @@ import sys
 from bson.json_util import dumps
 
 # import utils packages
-sys.path.append(os.path.join(os.path.dirname(__file__), 'utils'))
+sys.path.append(os.path.join(os.path.dirname(__file__), '../common/'))
 
 import mongodb_client # pylint: disable=import-error, wrong-import-position
 
