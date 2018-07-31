@@ -28,8 +28,13 @@ var localLoginStrategy = require('./passport/login_passport');
 passport.use('local-signup', localSignUpStrategy);
 passport.use('local-login', localLoginStrategy);
 
+const authChecker = require('./middleware/auth_checker');
+
 // register rounters
 app.use('/', indexRouter);
+// authChecker must be put before newsRouter
+// because we want to authenticate user before returning news
+app.use('/news', authChecker);
 app.use('/news', newsRouter);
 
 // catch 404 and forward to error handler
