@@ -16,7 +16,19 @@ SLEEP_TIME_IN_SECONDS = 10
 REDIS_HOST = 'localhost'
 REDIS_PORT = 6379
 
-NEWS_SOURCES = ['cnn']
+NEWS_SOURCES = [
+    'bbc-news',
+    'bbc-sport',
+    'bloomberg',
+    'cnn',
+    'entertainment-weekly',
+    'espn',
+    'ign',
+    'techcrunch',
+    'the-new-york-times',
+    'the-wall-street-journal',
+    'the-washington-post'
+]
 
 SCRAPE_NEWS_TASK_QUEUE_URL = \
 "amqp://vvfthevj:RDHPMvJF2ddNCRFIhztFPnG1g2-8SmFM@wombat.rmq.cloudamqp.com/vvfthevj"

@@ -7,3 +7,4 @@ sklearn
 numpy
 scipy
 python-dateutil
+newspaper3k

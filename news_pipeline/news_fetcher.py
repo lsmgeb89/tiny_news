@@ -3,11 +3,11 @@
 import os
 import sys
 
+from newspaper import Article
+
 # import common package in parent directory
 sys.path.append(os.path.join(os.path.dirname(__file__), '..', 'common'))
-sys.path.append(os.path.join(os.path.dirname(__file__), 'scrapers'))
 
-import cnn_news_scraper # pylint: disable=import-error, wrong-import-position
 from cloudamqp_client import CloudAMQPClient # pylint: disable=import-error, wrong-import-position
 
 DEDUPE_NEWS_TASK_QUEUE_URL = \
@@ -31,13 +31,11 @@ def handle_message(msg):
     task = msg
     text = None
 
-    if task['source'] == 'cnn':
-        print('scraping CNN news')
-        text = cnn_news_scraper.extract_news(task['url'])
-    else:
-        print('News source [%s] is not supported.' % task['source'])
+    article = Article(task['url'])
+    article.download()
+    article.parse()
 
-    task['text'] = text
+    task['text'] = article.text
     dedupe_news_queue_client.send_message(task)
 
 while True:
