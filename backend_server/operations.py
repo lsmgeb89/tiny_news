@@ -24,6 +24,7 @@ cloudamqp_client = CloudAMQPClient(LOG_CLICKS_TASK_QUEUE_URL, LOG_CLICKS_TASK_QU
 sys.path.append(os.path.join(os.path.dirname(__file__), '../common/'))
 
 import mongodb_client # pylint: disable=import-error, wrong-import-position
+import news_recommendation_service_client
 
 NEWS_TABLE_NAME = "news"
 
@@ -63,6 +64,22 @@ def get_news_summaries_for_user(user_id, page_num):
         redis_client.set(user_id, pickle.dumps(total_news_digests))
         redis_client.expire(user_id, USER_NEWS_TIME_OUT_IN_SECONDS)
         sliced_news = total_news[begin_index:end_index]
+
+    # Get preference for the user
+    preference = news_recommendation_service_client.get_preference_for_user(user_id)
+    top_preference = None
+
+    if preference is not None and len(preference) > 0:
+        top_preference = preference[0]
+
+    # add tags
+    for news in sliced_news:
+        # Remove text field to save bandwidth
+        del news['text']
+        if news['class'] == top_preference:
+            news['reason'] = 'Recommend'
+        if news['publishedAt'].date() == datetime.today().date():
+            news['time'] = 'today'
 
     return json.loads(dumps(sliced_news))
 
