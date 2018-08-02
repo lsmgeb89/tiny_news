@@ -15,6 +15,11 @@ USER_NEWS_TIME_OUT_IN_SECONDS = 60
 REDIS_HOST = 'localhost'
 REDIS_PORT = 6379
 
+LOG_CLICKS_TASK_QUEUE_URL = "amqp://ajftnpdj:6y0g9zX3VFRwBE6_yUeCQ-y2Nx4-LGIk@wombat.rmq.cloudamqp.com/ajftnpdj"
+LOG_CLICKS_TASK_QUEUE_NAME = "tiny-news-log-clicks-task-queue"
+
+cloudamqp_client = CloudAMQPClient(LOG_CLICKS_TASK_QUEUE_URL, LOG_CLICKS_TASK_QUEUE_NAME)
+
 # import utils packages
 sys.path.append(os.path.join(os.path.dirname(__file__), '../common/'))
 
@@ -60,3 +65,8 @@ def get_news_summaries_for_user(user_id, page_num):
         sliced_news = total_news[begin_index:end_index]
 
     return json.loads(dumps(sliced_news))
+
+def log_news_click_for_user(user_id, news_id):
+    # send log task to machine learning service for prediction
+    message = {'userId': user_id, 'newsId': news_id, 'timestamp': str(datetime.utcnow())}
+    cloudamqp_client.sendmessage(message)
