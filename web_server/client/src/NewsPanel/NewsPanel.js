@@ -9,7 +9,9 @@ import Auth from '../Auth/Auth';
 class NewsPanel extends React.Component {
   constructor() {
     super();
-    this.state = { news:null };
+    // loadedAll means whether db has no more news
+    // loadedAll could help decreasing unnecessary requests
+    this.state = { news: null, pageNum: 1, loadedAll: false };
   }
 
   handleScroll() {
@@ -38,7 +40,13 @@ class NewsPanel extends React.Component {
   }
 
   loadMoreNews() {
-    const news_url = 'http://' + window.location.hostname + ':3000' + '/news';
+    if (this.state.loadedAll == true) {
+      return;
+    }
+
+    const news_url = 'http://' + window.location.hostname + ':3000' +
+      '/news/userId/' + Auth.getEmail() + '/pageNum/' + this.state.pageNum;
+
     const request = new Request(
       news_url,
       {
@@ -52,8 +60,12 @@ class NewsPanel extends React.Component {
     fetch(request)
       .then(res => res.json())
       .then(news_list => {
+        if (!news || news.length == 0) {
+          this.setState({loadedAll: true});
+        }
         this.setState({
           news: this.state.news ? this.state.news.concat(news_list): news_list,
+          pageNum: this.state.pageNum + 1
         });
       });
   }
