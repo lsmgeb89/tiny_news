@@ -9,3 +9,4 @@ scipy
 python-dateutil
 newspaper3k
 tensorflow
+pandas
