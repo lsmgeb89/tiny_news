@@ -11,6 +11,8 @@ from sklearn.feature_extraction.text import TfidfVectorizer
 sys.path.append(os.path.join(os.path.dirname(__file__), '..', 'common'))
 
 import mongodb_client # pylint: disable=import-error, wrong-import-position
+import news_topic_modeling_service_client
+
 from cloudamqp_client import CloudAMQPClient # pylint: disable=import-error, wrong-import-position
 
 NEWS_TABLE_NAME = "news"
@@ -69,6 +71,13 @@ def handle_message(msg):
 
         # insert back to mongodb
         task['publishedAt'] = parser.parse(task['publishedAt'])
+
+        # classify news
+        title = task['title']
+        if title is not None:
+            topic = news_topic_modeling_service_client.classify(title)
+            task['class'] = topic
+
         database[NEWS_TABLE_NAME].replace_one({'digest': task['digest']}, task, upsert=True)
 
 while True:
