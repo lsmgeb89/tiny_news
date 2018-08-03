@@ -8,3 +8,4 @@ numpy
 scipy
 python-dateutil
 newspaper3k
+tensorflow
