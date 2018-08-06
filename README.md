@@ -23,8 +23,13 @@
 
 ## Design
 
+### News Pipeline
+
+![news_pipeline]
+
 ### Click Event Log Processing and Recommendation Pipeline
 
-![alt text][click_log]
+![click_log]
 
+[news_pipeline]: doc/news_pipeline.svg "News Pipeline"
 [click_log]: doc/click_log_recommendation.svg "Click Event Log Processing and Recommendation Pipeline"
