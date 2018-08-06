@@ -20,3 +20,11 @@
 [tf-idf]: https://en.wikipedia.org/wiki/Tf%E2%80%93idf
 [cnn]: https://en.wikipedia.org/wiki/Convolutional_neural_network
 [tensorflow]: https://www.tensorflow.org/
+
+## Design
+
+### Click Event Log Processing and Recommendation Pipeline
+
+![alt text][click_log]
+
+[click_log]: doc/click_log_recommendation.svg "Click Event Log Processing and Recommendation Pipeline"
