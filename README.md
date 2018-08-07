@@ -47,10 +47,10 @@
     * tcp port: `3000`
     * APIs:
       * `/`
-      * `/signup`
-      * `/login`
-      * `/userId/<user_id>/pageNum/<page_num>`
-      * `/userId/<user_id>/newsId/<news_id>`
+      * `/auth/signup`
+      * `/auth/login`
+      * `/news/userId/<user_id>/pageNum/<page_num>`
+      * `/news/userId/<user_id>/newsId/<news_id>`
 2. Backend Server
     * type: RPC Server
     * tcp port: `4040`
@@ -85,6 +85,10 @@
       * `dedupe-queue` stores news json object for similar topic deduplication
       * `log-clicks-queue` stores json object that contains which user clicks which news at which timestamp
 
+### User Authentication & Authorization
+
+![user_auth]
+
 ### News Pipeline
 
 ![news_pipeline]
@@ -93,5 +97,6 @@
 
 ![click_log]
 
+[user_auth]: doc/user_auth.svg "User Authentication & Authorization"
 [news_pipeline]: doc/news_pipeline.svg "News Pipeline"
 [click_log]: doc/click_log_recommendation.svg "Click Event Log Processing and Recommendation Pipeline"
