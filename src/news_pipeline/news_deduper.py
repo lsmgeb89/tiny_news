@@ -1,6 +1,7 @@
 """News deduper"""
 
 import datetime
+import logging
 import os
 import sys
 
@@ -9,31 +10,27 @@ from sklearn.feature_extraction.text import TfidfVectorizer
 
 # import common package in parent directory
 sys.path.append(os.path.join(os.path.dirname(__file__), '..', 'common'))
-
 import mongodb_client # pylint: disable=import-error, wrong-import-position
-import news_topic_modeling_service_client
-
+import news_topic_modeling_service_client # pylint: disable=import-error, wrong-import-position
 from cloudamqp_client import CloudAMQPClient # pylint: disable=import-error, wrong-import-position
 
 NEWS_TABLE_NAME = "news"
-
-SLEEP_TIME_IN_SECONDS = 1
-
+SLEEP_TIME_IN_SECONDS = 3
 SAME_NEWS_SIMILARITY_THRESHOLD = 0.9
-
 DEDUPE_NEWS_TASK_QUEUE_URL = \
 "amqp://fhptegqw:WdCACLVa7HsRuR-i_lbUQNznHjz83uK9@wombat.rmq.cloudamqp.com/fhptegqw"
 DEDUPE_NEWS_TASK_QUEUE_NAME = "tiny-news-dedupe-news-task-queue"
-CLOUDAMQP_CLIENT = CloudAMQPClient(DEDUPE_NEWS_TASK_QUEUE_URL, DEDUPE_NEWS_TASK_QUEUE_NAME)
 
 def handle_message(msg):
-    """Save deduplicated news into mongo db"""
+    """Save deduplicated news into MongoDB"""
     if msg is None or not isinstance(msg, dict):
+        logging.error("[news_deduper] message is not dict")
         return
 
     task = msg
     text = task['text']
     if text is None:
+        logging.error("[news_deduper] text attribute is none")
         return
 
     # get all recent news based on publishedAt
@@ -58,37 +55,45 @@ def handle_message(msg):
         # calculate similarity matrix
         tfidf = TfidfVectorizer().fit_transform(documents)
         pairwise_sim = tfidf * tfidf.T
-
-        print(pairwise_sim)
-
         rows, _ = pairwise_sim.shape
 
         # scan first column except first element
         for row in range(1, rows):
             if pairwise_sim[row, 0] > SAME_NEWS_SIMILARITY_THRESHOLD:
-                print("Duplicated news. Ignore.")
+                logging.info("[news_deduper] ignore deduplicated news")
                 return
 
-        # insert back to mongodb
-        task['publishedAt'] = parser.parse(task['publishedAt'])
+    # insert back to mongodb
+    task['publishedAt'] = parser.parse(task['publishedAt'])
 
-        # classify news
-        title = task['title']
-        if title is not None:
-            topic = news_topic_modeling_service_client.classify(title)
-            task['class'] = topic
+    # classify news
+    title = task['title']
+    if title is not None:
+        topic = news_topic_modeling_service_client.classify(title)
+        task['class'] = topic
 
-        database[NEWS_TABLE_NAME].replace_one({'digest': task['digest']}, task, upsert=True)
+    logging.info("[news_deduper] save news (digest = %s) into mongodb", task['digest'])
+    database[NEWS_TABLE_NAME].replace_one({'digest': task['digest']}, task, upsert=True)
 
-while True:
-    if CLOUDAMQP_CLIENT is not None:
-        MESSAGE = CLOUDAMQP_CLIENT.get_message()
-        if MESSAGE is not None:
-            # Parse and process the task
-            try:
-                handle_message(MESSAGE)
-            except Exception as error:
-                print(error)
-                pass
+def run():
+    cloudamqp_client = CloudAMQPClient(DEDUPE_NEWS_TASK_QUEUE_URL, DEDUPE_NEWS_TASK_QUEUE_NAME)
 
-        CLOUDAMQP_CLIENT.sleep(SLEEP_TIME_IN_SECONDS)
+    while True:
+        if cloudamqp_client is not None:
+            message = cloudamqp_client.get_message()
+
+            if message is not None:
+                # parse and process the task
+                try:
+                    handle_message(message)
+                except Exception as error:
+                    print(error)
+                    pass
+            else:
+                logging.info("[news_deduper] message is none")
+
+            cloudamqp_client.sleep(SLEEP_TIME_IN_SECONDS)
+
+if __name__ == "__main__":
+    logging.basicConfig(level=20)
+    run()
