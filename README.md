@@ -74,11 +74,11 @@
       * `<user_id, recent 200 news digest>` for caching this user's recent 200 news
 6. MongoDB Server
     * tcp port: `27017`
-    * database: `tiny-news`
-    * collections:
+    * database: `tiny-news`, collections:
       * `news` stores `<news_digest, news json object>`
-      * `users` stores doc that contains attributes `email` and `password`
       * `user_preference_model` stores doc that contains `userId` and `preference`
+    * database: `user`, collections:
+      * `users` stores doc that contains attributes `email` and `password`
 7. RabbitMQ‎
     * queues
       * `scrape-queue` stores tasks (news json object) for scraper to download news text
