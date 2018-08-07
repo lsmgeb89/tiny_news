@@ -36,6 +36,12 @@ build/Release
 node_modules/
 jspm_packages/
 
+# Coverage
+coverage/
+
+# production
+build/
+
 # TypeScript v1 declaration files
 typings/
 
@@ -173,3 +179,13 @@ venv.bak/
 
 
 # End of https://www.gitignore.io/api/python
+
+# CNN model folder
+model/
+
+# misc
+.DS_Store
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
