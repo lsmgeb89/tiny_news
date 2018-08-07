@@ -23,6 +23,68 @@
 
 ## Design
 
+### Modules
+
+1. Web Client and Server
+    * user sign up
+    * user login
+    * load news
+2. Backend Server
+3. News Pipeline
+    * monitor news
+    * scrape news
+    * dedupe news with similar topic
+4. Recommendation Service
+    * recommendate personalized news based on logs of click event
+5. News Topic Classification
+    * create offline modeling of news topic classification
+    * provide online service of news topic classification
+
+### Server List
+
+1. Web Server
+    * type: HTTP Server
+    * tcp port: `3000`
+    * APIs:
+      * `/`
+      * `/signup`
+      * `/login`
+      * `/userId/<user_id>/pageNum/<page_num>`
+      * `/userId/<user_id>/newsId/<news_id>`
+2. Backend Server
+    * type: RPC Server
+    * tcp port: `4040`
+    * APIs:
+      * `get_news_summaries_for_user(user_id, page_num)`
+      * `log_news_click_for_user(user_id, news_id)`
+3. Recommendation Server
+    * type: RPC Server
+    * tcp port: `5050`
+    * API:
+      * `get_preference_for_user(user_id)`
+4. Classification Server
+    * type: RPC server
+    * tcp port: `6060`
+    * API:
+      * `classify(news_text)`
+5. Redis Server:
+    * tcp port: `6379`
+    * key-value pairs:
+      * `<news_digest, True>` for precise news deduplication, expiring in one day
+      * `<user_id, recent 200 news digest>` for caching this user's recent 200 news
+6. MongoDB Server
+    * tcp port: `27017`
+    * database: `tiny-news`
+    * collections:
+      * `news` stores `<news_digest, news json object>`
+      * `users` stores doc that contains attributes `email` and `password`
+      * `user_preference_model` stores doc that contains `userId` and `preference`
+7. RabbitMQ‎
+    * queues
+      * `scrape-queue` stores tasks (news json object) for scraper to download news text
+      * `dedupe-queue` stores news json object for similar topic deduplication
+      * `log-clicks-queue` stores json object that contains which user clicks which news at which timestamp
+
 ### News Pipeline
 
 ![news_pipeline]
