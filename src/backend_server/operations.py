@@ -18,17 +18,17 @@ REDIS_PORT = 6379
 LOG_CLICKS_TASK_QUEUE_URL = "amqp://ajftnpdj:6y0g9zX3VFRwBE6_yUeCQ-y2Nx4-LGIk@wombat.rmq.cloudamqp.com/ajftnpdj"
 LOG_CLICKS_TASK_QUEUE_NAME = "tiny-news-log-clicks-task-queue"
 
-cloudamqp_client = CloudAMQPClient(LOG_CLICKS_TASK_QUEUE_URL, LOG_CLICKS_TASK_QUEUE_NAME)
-
 # import utils packages
 sys.path.append(os.path.join(os.path.dirname(__file__), '../common/'))
 
 import mongodb_client # pylint: disable=import-error, wrong-import-position
-import news_recommendation_service_client
+from cloudamqp_client import CloudAMQPClient # pylint: disable=import-error, wrong-import-position
+import news_recommendation_service_client # pylint: disable=import-error, wrong-import-position
 
 NEWS_TABLE_NAME = "news"
 
 redis_client = redis.StrictRedis(REDIS_HOST, REDIS_PORT, db=0)
+cloudamqp_client = CloudAMQPClient(LOG_CLICKS_TASK_QUEUE_URL, LOG_CLICKS_TASK_QUEUE_NAME)
 
 def get_one_news():
     """Get one news"""
