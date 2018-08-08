@@ -86,4 +86,4 @@ def get_news_summaries_for_user(user_id, page_num):
 def log_news_click_for_user(user_id, news_id):
     # send log task to machine learning service for prediction
     message = {'userId': user_id, 'newsId': news_id, 'timestamp': str(datetime.utcnow())}
-    cloudamqp_client.sendmessage(message)
+    cloudamqp_client.send_message(message, "[backend_server]")
