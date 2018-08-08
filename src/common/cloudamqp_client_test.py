@@ -9,9 +9,9 @@ def test_basic():
     """Test CloudAMQP client basically"""
     client = CloudAMQPClient(CLOUDAMQP_URL, TEST_QUEUE_NAME)
 
-    sent_msg = {"tiny-news":"test"}
-    client.send_message(sent_msg)
-    received_msg = client.get_message()
+    sent_msg = {"title": "test news"}
+    client.send_message(sent_msg, "[cloudamqp tester]")
+    received_msg = client.get_message("[cloudamqp tester]")
 
     assert sent_msg == received_msg
     print("test_basic passed!")

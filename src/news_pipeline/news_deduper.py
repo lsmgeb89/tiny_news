@@ -23,8 +23,8 @@ DEDUPE_NEWS_TASK_QUEUE_NAME = "tiny-news-dedupe-news-task-queue"
 
 def handle_message(msg):
     """Save deduplicated news into MongoDB"""
-    if msg is None or not isinstance(msg, dict):
-        logging.error("[news_deduper] message is not dict")
+    if msg is not isinstance(msg, dict):
+        logging.error("[news_deduper] news is not dict")
         return
 
     task = msg
@@ -72,7 +72,7 @@ def handle_message(msg):
         topic = news_topic_modeling_service_client.classify(title)
         task['class'] = topic
 
-    logging.info("[news_deduper] save news (digest = %s) into mongodb", task['digest'])
+    logging.info("[news_deduper] save news into MongoDB, title = %s", title)
     database[NEWS_TABLE_NAME].replace_one({'digest': task['digest']}, task, upsert=True)
 
 def run():
@@ -83,14 +83,11 @@ def run():
             message = cloudamqp_client.get_message()
 
             if message is not None:
-                # parse and process the task
                 try:
                     handle_message(message)
                 except Exception as error:
                     print(error)
                     pass
-            else:
-                logging.info("[news_deduper] message is none")
 
             cloudamqp_client.sleep(SLEEP_TIME_IN_SECONDS)
 

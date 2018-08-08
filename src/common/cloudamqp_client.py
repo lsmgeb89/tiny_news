@@ -1,6 +1,7 @@
 """CloudAMQP client"""
 
 import json
+import logging
 import pika
 
 class CloudAMQPClient:
@@ -14,26 +15,28 @@ class CloudAMQPClient:
         self.channel = self.connection.channel()
         self.channel.queue_declare(queue=queue_name)
 
-    # send a message (json)
-    def send_message(self, message):
+    def send_message(self, message, sender=''):
         """Send a json message"""
         self.channel.basic_publish(exchange='',
                                    routing_key=self.queue_name,
                                    body=json.dumps(message))
+        logging.info("%s push news to %s, title = %s", sender, self.queue_name, message['title'])
 
-        print("[x] Sent message to %s:%s" % (self.queue_name, message))
-
-    # get a message
-    def get_message(self):
+    def get_message(self, receiver=''):
         """Get a message"""
-        method_frame, header_frame, body = self.channel.basic_get(self.queue_name)
-        if method_frame:
-            print("[x] Received message from %s:%s" % (self.queue_name, body))
-            self.channel.basic_ack(method_frame.delivery_tag)
-            # convert bytes to string
-            return json.loads(body.decode('utf-8'))
+        method_frame, _, body = self.channel.basic_get(self.queue_name)
 
-        print("No message returned.")
+        if method_frame:
+            # send ack to queue
+            self.channel.basic_ack(method_frame.delivery_tag)
+
+            # convert bytes to string
+            news = json.loads(body.decode('utf-8'))
+            logging.info("%s pop news from %s, title = %s", receiver, self.queue_name, news['title'])
+            return news
+        else:
+            logging.info("%s %s is empty", receiver, self.queue_name)
+
         return None
 
     # BlockingConnection.sleep is a safer way to sleep than calling time.sleep().
