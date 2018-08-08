@@ -20,7 +20,7 @@ class CloudAMQPClient:
         self.channel.basic_publish(exchange='',
                                    routing_key=self.queue_name,
                                    body=json.dumps(message))
-        logging.info("%s push news to %s, title = %s", sender, self.queue_name, message['title'])
+        logging.info("%s push message to %s, message = %s", sender, self.queue_name, json.dumps(message)[:50])
 
     def get_message(self, receiver=''):
         """Get a message"""
@@ -30,9 +30,9 @@ class CloudAMQPClient:
             # send ack to queue
             self.channel.basic_ack(method_frame.delivery_tag)
 
-            # convert bytes to string
+            # bytes -> json string -> dict
             news = json.loads(body.decode('utf-8'))
-            logging.info("%s pop news from %s, title = %s", receiver, self.queue_name, news['title'])
+            logging.info("%s pop message from %s, message = %s", receiver, self.queue_name, body.decode('utf-8')[:50])
             return news
         else:
             logging.info("%s %s is empty", receiver, self.queue_name)
