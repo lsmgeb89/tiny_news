@@ -36,6 +36,9 @@ vocab_processor = None
 
 classifier = None
 
+# suppress tensorflow deprecation warning
+tf.logging.set_verbosity(tf.logging.ERROR)
+
 def restoreVars():
     with open(VARS_FILE, 'rb') as f:
         global n_words

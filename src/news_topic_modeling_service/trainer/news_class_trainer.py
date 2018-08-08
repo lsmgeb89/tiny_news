@@ -70,4 +70,5 @@ def main(unused_argv):
     print('Accuracy: {0:f}'.format(score))
 
 if __name__ == '__main__':
+    tf.logging.set_verbosity(tf.logging.ERROR)
     tf.app.run(main=main)
