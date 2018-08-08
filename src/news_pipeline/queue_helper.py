@@ -26,7 +26,7 @@ def clear_queue(queue_url, queue_name):
 
     while True:
         if queue_client is not None:
-            msg = queue_client.get_message()
+            msg = queue_client.get_message("[queue_helper]")
             if msg is None:
                 print("Cleared %d messages." % num_of_messages)
                 return

@@ -30,7 +30,8 @@ ALPHA = 0.1
 
 SLEEP_TIME_IN_SECONDS = 1
 
-LOG_CLICKS_TASK_QUEUE_URL = "amqp://ajftnpdj:6y0g9zX3VFRwBE6_yUeCQ-y2Nx4-LGIk@wombat.rmq.cloudamqp.com/ajftnpdj"
+LOG_CLICKS_TASK_QUEUE_URL = \
+"amqp://ajftnpdj:6y0g9zX3VFRwBE6_yUeCQ-y2Nx4-LGIk@wombat.rmq.cloudamqp.com/ajftnpdj"
 LOG_CLICKS_TASK_QUEUE_NAME = "tap-news-log-clicks-task-queue"
 
 PREFERENCE_MODEL_TABLE_NAME = "user_preference_model"
@@ -82,7 +83,7 @@ def handle_message(msg):
     model['preference'][click_class] = float((1 - ALPHA) * old_p + ALPHA)
 
     # Update not clicked classes.
-    for i, prob in model['preference'].items():
+    for i, _ in model['preference'].items():
         if not i == click_class:
             model['preference'][i] = float((1 - ALPHA) * model['preference'][i])
 
@@ -92,7 +93,7 @@ def handle_message(msg):
 def run():
     while True:
         if cloudamqp_client is not None:
-            msg = cloudamqp_client.get_message()
+            msg = cloudamqp_client.get_message("[click_log_processor]")
             if msg is not None:
                 # Parse and process the task
                 try:

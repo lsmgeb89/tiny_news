@@ -39,6 +39,7 @@ def handle_message(msg):
     dedupe_queue_client.send_message(task, "[news_fetcher]")
 
 def run():
+    logging.info("[news_fetcher] start running")
     scrape_queue_client = CloudAMQPClient(SCRAPE_NEWS_TASK_QUEUE_URL, SCRAPE_NEWS_TASK_QUEUE_NAME)
 
     while True:

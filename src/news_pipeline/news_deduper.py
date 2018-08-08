@@ -76,11 +76,12 @@ def handle_message(msg):
     database[NEWS_TABLE_NAME].replace_one({'digest': task['digest']}, task, upsert=True)
 
 def run():
+    logging.info("[news_deduper] start running")
     cloudamqp_client = CloudAMQPClient(DEDUPE_NEWS_TASK_QUEUE_URL, DEDUPE_NEWS_TASK_QUEUE_NAME)
 
     while True:
         if cloudamqp_client is not None:
-            message = cloudamqp_client.get_message()
+            message = cloudamqp_client.get_message("[news_deduper]")
 
             if message is not None:
                 try:
