@@ -5,7 +5,7 @@ import os
 import pickle
 import redis
 import sys
-
+from datetime import datetime
 from bson.json_util import dumps
 
 NEWS_LIST_BATCH_SIZE = 10
