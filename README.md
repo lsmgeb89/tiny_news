@@ -21,6 +21,12 @@
 [cnn]: https://en.wikipedia.org/wiki/Convolutional_neural_network
 [tensorflow]: https://www.tensorflow.org/
 
+## Preview
+
+![Preview][preview]
+
+[preview]: doc/preview.gif "Preview"
+
 ## Design
 
 ### Modules
